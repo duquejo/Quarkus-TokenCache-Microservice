@@ -18,7 +18,14 @@ public class GetTokenUseCaseImpl implements GetTokenUseCase {
     @Override
     public Uni<Token> getToken() {
         return tokenRepositoryPort.keys()
-                .select().first().toUni()
-                .flatMap(tokenRepositoryPort::get);
+                .select()
+                .first()
+                .toUni()
+                .flatMap( key -> {
+                    if( key == null ) {
+                        return Uni.createFrom().nullItem();
+                    }
+                    return tokenRepositoryPort.get(key);
+                });
     }
 }

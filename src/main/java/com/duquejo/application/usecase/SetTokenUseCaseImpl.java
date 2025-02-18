@@ -18,7 +18,15 @@ public class SetTokenUseCaseImpl implements SetTokenUseCase {
     }
 
     @Override
-    public Uni<Token> setToken(Token token) {
+    public Uni<Token> setToken() {
+        // Mocked external call
+        Token token = new Token(
+            "Bearer",
+            3600L,
+            3600L,
+            "ey12n3dqqwd.A4daw3QWD1dw54rqsqwd45a4sAdnhh00-0asd"
+        );
+
         return tokenRepositoryPort.set(LocalDateTime.now().toString(), token)
             .onItem()
             .transform(unused -> token);

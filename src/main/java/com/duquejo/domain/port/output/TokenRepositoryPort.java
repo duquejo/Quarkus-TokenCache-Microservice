@@ -9,7 +9,5 @@ public interface TokenRepositoryPort {
 
     Uni<Void> set(String key, Token value);
 
-    Uni<Void> del(String key);
-
     Multi<String> keys();
 }

@@ -1,7 +1,6 @@
 package com.duquejo.infrastructure.adapter.input;
 
 import com.duquejo.application.service.TokenService;
-import com.duquejo.domain.model.Token;
 import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -28,7 +27,7 @@ public class TokenController {
 
     @GET
     public Uni<Response> getToken() {
-        return service.getToken()
+        return service.getOrSetToken()
                 .map(token -> Response.ok(token).build())
                 .onFailure()
                     .invoke(ex -> Log.error("Error while getting token: ".concat(ex.getMessage())))
@@ -43,16 +42,7 @@ public class TokenController {
     @GET
     @Path("/set")
     public Uni<Response> setToken() {
-
-        // Mocked external call
-        Token mockedToken = new Token(
-            "Bearer",
-            3600L,
-            3600L,
-            "ey12n3dqqwd.A4daw3QWD1dw54rqsqwd45a4sAdnhh00-0asd"
-        );
-
-        return service.setToken(mockedToken)
+        return service.setToken()
                 .onFailure().retry().atMost(3)
                 .onFailure().invoke(ex ->
                     Log.error("Error while setting token: " + ex.getMessage(), ex)

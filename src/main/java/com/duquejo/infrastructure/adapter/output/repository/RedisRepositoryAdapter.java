@@ -46,14 +46,6 @@ public class RedisRepositoryAdapter implements TokenRepositoryPort {
     }
 
     @Override
-    public Uni<Void> del(String key) {
-        return keyCommands.del(key)
-                .replaceWithVoid()
-                .onFailure().invoke(throwable ->
-                    Log.errorf("Error while deleting token for the key '%s': '%s'", key, throwable.getMessage()));
-    }
-
-    @Override
     public Multi<String> keys() {
         return keyCommands.keys("*")
                 .onItem().transformToMulti(array -> Multi.createFrom().iterable(array))
