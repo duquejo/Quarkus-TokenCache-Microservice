@@ -53,6 +53,9 @@ You can then execute your native executable with: `./build/token-cache-1.0.0-SNA
 
 If you want to learn more about building native executables, please consult <https://quarkus.io/guides/gradle-tooling>.
 
+## Quarkus graphic bundling schema
+<img alt="img.png" src="img.png" width="300" />
+
 ## Related Guides
 
 - REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
@@ -64,3 +67,10 @@ If you want to learn more about building native executables, please consult <htt
 Easily start your REST Web Services
 
 [Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+
+### Next steps
+
+1. Generate dynamic JWT or mock it from external service
+2. Set TTL from expires_in parameter
+3. Decouple Token object from persistence and better use a dedicated Entity
+4. Add a global controller advice handler
