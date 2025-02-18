@@ -74,3 +74,4 @@ Easily start your REST Web Services
 2. Set TTL from expires_in parameter
 3. Decouple Token object from persistence and better use a dedicated Entity
 4. Add a global controller advice handler
+5. Modify JsonProperty attribute names in order to make it more coherent "snake_case".
