@@ -9,9 +9,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 
-import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.UUID;
 
 @Path("/token")
 @Produces(MediaType.APPLICATION_JSON)
@@ -28,7 +27,16 @@ public class TokenController {
     @GET
     public Uni<Response> getToken() {
         return service.getOrSetToken()
-                .map(token -> Response.ok(token).build())
+                .map(token -> {
+
+                    HashMap<String, Object> response = new HashMap<>();
+
+                    response.put("token", token);
+                    response.put("timestamp", LocalDateTime.now());
+
+                    return Response.ok(response).build();
+
+                })
                 .onFailure()
                     .invoke(ex -> Log.error("Error while getting token: ".concat(ex.getMessage())))
                 .onFailure()
@@ -37,29 +45,5 @@ public class TokenController {
                             .entity(throwable.getMessage())
                             .build()
                     );
-    }
-
-    @GET
-    @Path("/set")
-    public Uni<Response> setToken() {
-        return service.setToken()
-                .onFailure().retry().atMost(3)
-                .onFailure().invoke(ex ->
-                    Log.error("Error while setting token: " + ex.getMessage(), ex)
-                )
-                .map(token -> {
-                    HashMap<String, Object> response = new HashMap<>();
-                    response.put("token", token);
-                    response.put("timestamp", UUID.randomUUID().toString());
-                    return Response.created(URI.create("/set"))
-                            .entity(response)
-                            .build();
-                })
-                .onFailure()
-                .recoverWithItem( throwable ->
-                    Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                            .entity(throwable.getMessage())
-                            .build()
-                );
     }
 }
