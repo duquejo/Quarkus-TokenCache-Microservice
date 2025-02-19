@@ -2,7 +2,7 @@
 package com.duquejo.infrastructure.adapter.output.repository;
 
 import com.duquejo.domain.model.Token;
-import com.duquejo.domain.port.output.TokenRepositoryPort;
+import com.duquejo.domain.port.output.TokenEntityRepositoryPort;
 import com.duquejo.infrastructure.entity.TokenEntity;
 import io.quarkus.redis.datasource.ReactiveRedisDataSource;
 import io.quarkus.redis.datasource.keys.ReactiveKeyCommands;
@@ -15,7 +15,7 @@ import java.time.Duration;
 import org.jboss.logging.Logger;
 
 @ApplicationScoped
-public class RedisRepositoryAdapter implements TokenRepositoryPort {
+public class RedisRepositoryAdapter implements TokenEntityRepositoryPort {
 
   private static final Logger Log = Logger.getLogger(RedisRepositoryAdapter.class);
 

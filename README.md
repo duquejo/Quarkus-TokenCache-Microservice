@@ -70,8 +70,6 @@ Easily start your REST Web Services
 
 ### Next steps
 
-1. Generate dynamic JWT or mock it from external service
-2. Set TTL from expires_in parameter
-3. Decouple Token object from persistence and better use a dedicated Entity
-4. Add a global controller advice handler
-5. Modify JsonProperty attribute names in order to make it more coherent "snake_case".
+1. Add a global controller advice handler
+2. Increase total tests coverage
+3. Add a Architectural diagram

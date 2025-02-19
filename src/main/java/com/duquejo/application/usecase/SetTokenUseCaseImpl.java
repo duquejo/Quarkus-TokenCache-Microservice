@@ -3,27 +3,30 @@ package com.duquejo.application.usecase;
 
 import com.duquejo.domain.model.Token;
 import com.duquejo.domain.port.input.SetTokenUseCase;
-import com.duquejo.domain.port.output.TokenRepositoryPort;
+import com.duquejo.domain.port.output.TokenClientPort;
+import com.duquejo.domain.port.output.TokenEntityRepositoryPort;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.UUID;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @ApplicationScoped
 public class SetTokenUseCaseImpl implements SetTokenUseCase {
 
-  private final TokenRepositoryPort tokenRepositoryPort;
+  private final TokenEntityRepositoryPort tokenRepository;
+  private final TokenClientPort tokenClient;
 
-  public SetTokenUseCaseImpl(TokenRepositoryPort tokenRepositoryPort) {
-    this.tokenRepositoryPort = tokenRepositoryPort;
+  public SetTokenUseCaseImpl(
+      TokenEntityRepositoryPort tokenRepository, @RestClient TokenClientPort tokenClient) {
+    this.tokenRepository = tokenRepository;
+    this.tokenClient = tokenClient;
   }
 
   @Override
   public Uni<Token> setToken() {
-    // Mocked external call
-    Token token = new Token("Bearer", 10, 10, "ey12n3dqqwd.A4daw3QWD1dw54rqsqwd45a4sAdnhh00-0asd=");
-
-    String tokenId = UUID.randomUUID().toString();
-
-    return tokenRepositoryPort.set(tokenId, token).onItem().transform(unused -> token);
+    return tokenClient.getTokenAsync().call(token -> tokenRepository
+        .set(UUID.randomUUID().toString(), token)
+        .onItem()
+        .transform(unused -> token));
   }
 }

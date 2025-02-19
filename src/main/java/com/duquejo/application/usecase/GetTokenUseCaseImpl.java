@@ -3,7 +3,7 @@ package com.duquejo.application.usecase;
 
 import com.duquejo.domain.model.Token;
 import com.duquejo.domain.port.input.GetTokenUseCase;
-import com.duquejo.domain.port.output.TokenRepositoryPort;
+import com.duquejo.domain.port.output.TokenEntityRepositoryPort;
 import com.duquejo.infrastructure.entity.TokenEntity;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -11,19 +11,19 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class GetTokenUseCaseImpl implements GetTokenUseCase {
 
-  private final TokenRepositoryPort tokenRepositoryPort;
+  private final TokenEntityRepositoryPort tokenEntityRepositoryPort;
 
-  public GetTokenUseCaseImpl(TokenRepositoryPort tokenRepositoryPort) {
-    this.tokenRepositoryPort = tokenRepositoryPort;
+  public GetTokenUseCaseImpl(TokenEntityRepositoryPort tokenEntityRepositoryPort) {
+    this.tokenEntityRepositoryPort = tokenEntityRepositoryPort;
   }
 
   @Override
   public Uni<Token> getToken() {
-    return tokenRepositoryPort.keys().select().first().toUni().flatMap(key -> {
+    return tokenEntityRepositoryPort.keys().select().first().toUni().flatMap(key -> {
       if (key == null) {
         return Uni.createFrom().nullItem();
       }
-      return tokenRepositoryPort.get(key).map(TokenEntity::getToken);
+      return tokenEntityRepositoryPort.get(key).map(TokenEntity::getToken);
     });
   }
 }
