@@ -1,5 +1,5 @@
 /* (C) @duquejo 2025 */
-package com.duquejo;
+package com.duquejo.infrastructure.adapter.input;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 

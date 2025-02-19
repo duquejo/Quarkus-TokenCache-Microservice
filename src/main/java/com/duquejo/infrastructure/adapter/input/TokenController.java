@@ -49,11 +49,7 @@ public class TokenController {
           return Response.ok(response).build();
         })
         .onFailure()
-        .invoke(ex -> Log.error("Error while getting token: ".concat(ex.getMessage())))
-        .onFailure()
-        .recoverWithItem(throwable -> Response.status(Response.Status.BAD_REQUEST)
-            .entity(throwable.getMessage())
-            .build());
+        .invoke(ex -> Log.error("Error while getting token: ".concat(ex.getMessage())));
   }
 
   public Uni<Response> fallbackFromSource() {
