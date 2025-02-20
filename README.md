@@ -4,6 +4,26 @@ This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
+## General Architecture Schema
+
+<img src="architecture.png" title="Hexagonal Architecture"/>
+
+## Technologies
+
+- Quarkus Framework
+- Quarkus REST
+- Java 21
+- Gradle 8.5
+- Quarkus Redis Client
+- Quarkus Smallrye Fault Tolerance (Resiliency strategies)
+- Rest Assured (Integration tests)
+- Quarkus Jacoco
+- Quarkus JUnit5
+- Quarkus Mockito
+- Quarkus Smallye OpenAPI
+- Spotless
+- PMD
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
@@ -67,9 +87,3 @@ If you want to learn more about building native executables, please consult <htt
 Easily start your REST Web Services
 
 [Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
-
-### Next steps
-
-1. Add a global controller advice handler
-2. Increase total tests coverage
-3. Add a Architectural diagram
