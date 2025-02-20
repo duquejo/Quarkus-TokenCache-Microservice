@@ -1,78 +1,64 @@
-/* (C) @duquejo 2025 */
 package com.duquejo.infrastructure.adapter.output.repository;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import com.duquejo.domain.model.Token;
 import com.duquejo.infrastructure.entity.TokenEntity;
 import io.quarkus.redis.datasource.ReactiveRedisDataSource;
-import io.quarkus.redis.datasource.keys.ReactiveKeyCommands;
-import io.quarkus.redis.datasource.value.ReactiveValueCommands;
-import io.quarkus.redis.datasource.value.SetArgs;
-import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RedisRepositoryAdapterTest {
 
-  @InjectMock
-  ReactiveRedisDataSource reactive;
+    @Inject
+    private RedisRepositoryAdapter redisRepository;
 
-  // Inner dependencies
-  @SuppressWarnings("unchecked")
-  ReactiveValueCommands<String, TokenEntity> reactiveValueCommands =
-      mock(ReactiveValueCommands.class);
+    private final String expectedKey = "token-key";
+    private final Token expectedToken = new Token("Bearer", 3600, 3600, "access_token");
 
-  @SuppressWarnings("unchecked")
-  ReactiveKeyCommands<String> reactiveKeyCommands = mock(ReactiveKeyCommands.class);
+    @Test
+    @Order(1)
+    void testRedisRepository_whenGetNull() {
+        TokenEntity result = redisRepository.get(expectedKey).await().indefinitely();
 
-  @Inject
-  private RedisRepositoryAdapter redisRepository;
+        assertNotNull(result);
+        assertNull(result.getKey());
+        assertNull(result.getToken());
+    }
 
-  private final String key = "token-key";
-  private final Token sampleToken = new Token("Bearer", 3600, 3600, "access_token");
-  private final TokenEntity tokenEntity = new TokenEntity(key, sampleToken);
+    @Test
+    @Order(2)
+    void testRedisRepository_whenGet() {
+        redisRepository.set(expectedKey, expectedToken).await().indefinitely();
 
-  @BeforeEach
-  public void setUp() {
-    when(reactive.value(TokenEntity.class)).thenReturn(reactiveValueCommands);
-    when(reactive.key()).thenReturn(reactiveKeyCommands);
-  }
+        TokenEntity result = redisRepository.get(expectedKey).await().indefinitely();
 
-  @Test
-  void testRedisRepository_whenGet() {
-    when(reactiveValueCommands.get(key)).thenReturn(Uni.createFrom().item(tokenEntity));
+        assertNotNull(result);
+        assertEquals(expectedKey, result.getKey());
+        assertEquals(expectedToken, result.getToken());
+    }
 
-    TokenEntity result = redisRepository.get(key).await().indefinitely();
+    @Test
+    @Order(3)
+    void testRedisRepository_whenSet() {
+        Void result = redisRepository.set(expectedKey, expectedToken).await().indefinitely();
 
-    assertNotNull(result);
-    assertEquals(tokenEntity.getKey(), result.getKey());
-    assertEquals(tokenEntity.getToken(), result.getToken());
+        assertNull(result, "If the <get> operation is null, must return a empty token instance");
+    }
 
-    verify(reactiveValueCommands).get(key);
-  }
+    @Test
+    @Order(4)
+    void testRedisRepository_whenKeys() {
+        redisRepository.set(expectedKey, expectedToken).await().indefinitely();
 
-  @Test
-  void testRedisRepository_whenGetNull() {
-    when(reactiveValueCommands.get(key)).thenReturn(Uni.createFrom().nullItem());
+        List<String> keysList = redisRepository.keys().collect().asList().await().indefinitely();
 
-    TokenEntity result = redisRepository.get(key).await().indefinitely();
-
-    assertNotNull(result, "If the <get> operation is null, must return a empty token instance");
-  }
-
-  @Test
-  void testRedisRepository_whenSet() {
-    when(reactiveValueCommands.set(anyString(), any(TokenEntity.class), any(SetArgs.class)))
-        .thenReturn(Uni.createFrom().voidItem());
-
-    Void set = redisRepository.set(key, sampleToken).await().indefinitely();
-
-    assertNull(set, "The <set> operation must return null if success.");
-  }
+        assertEquals(1, keysList.size());
+        assertEquals(expectedKey, keysList.getFirst());
+    }
 }
